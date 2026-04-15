@@ -1,0 +1,35 @@
+query GetSearchedProducts($query: String!) {
+  search(
+    query: $query
+    prefix: LAST
+    first: 10
+    sortKey: RELEVANCE
+    types: PRODUCT
+  ) {
+    edges {
+      node {
+        ... on Product {
+          id
+          title
+          priceRange {
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          handle
+          featuredImage {
+            url(
+              transform: {
+                crop: CENTER
+                maxHeight: 50
+                maxWidth: 100
+                preferredContentType: PNG
+              }
+            )
+          }
+        }
+      }
+    }
+  }
+}

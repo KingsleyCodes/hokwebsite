@@ -1,10 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/useCartStore";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { Menu, Search, ShoppingBag, X } from "lucide-react"; // Switched to ShoppingBag for more Luxe feel
+import { Menu, Search, ShoppingBag, ChevronDown, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -55,50 +54,86 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white">
-      {/* Announcement Bar - Very 'Fresh' style */}
-      <div className="bg-[#0070bb] py-2 text-center text-[10px] font-medium tracking-[0.2em] text-white uppercase">
+    <header className="sticky top-0 z-50 w-full bg-white">
+      {/* Announcement Bar */}
+      <div className="bg-[#0070bb] py-2 text-center text-[9px] font-bold tracking-[0.25em] text-white uppercase">
         Free Shipping on all orders over ₦50,000
       </div>
 
-      <div className="mx-auto max-w-[1440px] px-4 lg:px-8">
+      <div className="mx-auto max-w-[1440px] border-b border-stone-100 px-4 lg:px-8">
         <section className="flex h-16 items-center justify-between lg:h-24">
           
-          {/* LEFT: Mobile Menu & Desktop Search */}
+          {/* LEFT: Mobile Toggle */}
           <div className="flex flex-1 items-center gap-4">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
-                  <Menu className="h-6 w-6 text-black" />
-                </Button>
+                <button className="lg:hidden p-2 -ml-2 outline-none border-none bg-transparent">
+                  <Menu className="h-6 w-6 stroke-[1.2px]" />
+                </button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full p-0 sm:w-[400px]">
-                <div className="flex flex-col h-full pt-12">
-                  <div className="px-6 pb-8 border-b border-gray-100">
-                     <ProductSearch />
-                  </div>
-                  <nav className="flex flex-col px-6 py-4 overflow-y-auto">
+              
+              <SheetContent side="top" className="w-full h-screen max-h-screen p-0 border-none bg-white flex flex-col duration-300">
+                {/* 1. Header Row (The built-in Close button will appear here automatically) */}
+                <div className="flex items-center px-6 py-5 border-b border-stone-50 flex-shrink-0">
+                  <span className="text-[10px] font-bold tracking-widest text-stone-400 uppercase">Menu</span>
+                </div>
+
+                {/* 2. Search Area */}
+                <div className="px-6 py-4 border-b border-stone-50 bg-stone-50/30 flex-shrink-0">
+                   <ProductSearch />
+                </div>
+
+                {/* 3. Navigation Links */}
+                <nav className="flex-1 overflow-y-auto px-6 py-2">
+                  <div className="flex flex-col divide-y divide-stone-50">
                     {NavLinks.map((link) => (
-                      <div key={link.title} className="py-4 border-b border-gray-50">
-                        <Link href={link.href} className="text-sm tracking-widest uppercase font-medium" onClick={() => setOpen(false)}>
-                          {link.title}
-                        </Link>
+                      <div key={link.title} className="py-4">
+                        <div className="flex items-center justify-between">
+                          <Link 
+                            href={link.href} 
+                            className="text-lg font-serif text-stone-900"
+                            onClick={() => setOpen(false)}
+                          >
+                            {link.title}
+                          </Link>
+                          {link.submenu && <ChevronRight className="h-3.5 w-3.5 text-stone-300" />}
+                        </div>
+                        
+                        {link.submenu && (
+                          <div className="flex flex-wrap gap-x-4 gap-y-2 pt-3">
+                            {link.submenu.map((sub) => (
+                              <Link 
+                                key={sub.title} 
+                                href={sub.href}
+                                className="text-[10px] tracking-widest text-stone-400 uppercase font-medium"
+                                onClick={() => setOpen(false)}
+                              >
+                                {sub.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
-                  </nav>
-                </div>
+                  </div>
+                  
+                  <div className="mt-12 space-y-4 pb-10">
+                    <Link href="/account" onClick={() => setOpen(false)} className="block text-[10px] tracking-widest text-stone-400 uppercase font-bold">My Account</Link>
+                    <Link href="/help" onClick={() => setOpen(false)} className="block text-[10px] tracking-widest text-stone-400 uppercase font-bold">Help & Support</Link>
+                  </div>
+                </nav>
               </SheetContent>
             </Sheet>
 
-            <div className="hidden lg:block group">
-              <button className="flex items-center gap-2 text-[11px] tracking-[0.15em] font-medium text-gray-500 hover:text-black transition-colors">
-                <Search className="h-4 w-4" strokeWidth={1.5} />
+            <div className="hidden lg:block">
+              <button className="flex items-center gap-2 text-[10px] tracking-[0.2em] font-bold text-stone-400 hover:text-black transition-colors outline-none">
+                <Search className="h-4 w-4 stroke-[1.5px]" />
                 SEARCH
               </button>
             </div>
           </div>
 
-          {/* CENTER: Logo (The Anchor) */}
+          {/* CENTER: Logo */}
           <div className="flex flex-1 justify-center">
             <Link href="/" className="transition-opacity hover:opacity-80">
               <Image
@@ -106,21 +141,21 @@ export default function Navbar() {
                 alt="HOK Logo"
                 width={120}
                 height={40}
-                className="h-8 w-auto lg:h-12"
+                className="h-7 w-auto lg:h-10"
               />
             </Link>
           </div>
 
-          {/* RIGHT: Cart & Utils */}
-          <div className="flex flex-1 items-center justify-end gap-6">
-            <Link href="/cart" className="group relative flex items-center gap-2">
-              <span className="hidden text-[11px] font-medium tracking-[0.15em] text-gray-500 group-hover:text-black lg:block">
+          {/* RIGHT: Cart */}
+          <div className="flex flex-1 items-center justify-end">
+            <Link href="/cart" className="group relative flex items-center gap-2 outline-none">
+              <span className="hidden text-[10px] font-bold tracking-[0.2em] text-stone-400 group-hover:text-black lg:block">
                 BAG
               </span>
               <div className="relative">
-                <ShoppingBag className="h-5 w-5 lg:h-6 lg:w-6" strokeWidth={1.2} />
+                <ShoppingBag className="h-5 w-5 lg:h-6 lg:w-6 stroke-[1.2px]" />
                 {mounted && totalItemsCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0070bb] text-[9px] font-bold text-white">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0070bb] text-[8px] font-bold text-white">
                     {totalItemsCount}
                   </span>
                 )}
@@ -131,24 +166,25 @@ export default function Navbar() {
 
         {/* BOTTOM: Desktop Navigation */}
         <nav className="hidden lg:block">
-          <ul className="flex items-center justify-center gap-12 pb-6">
+          <ul className="flex items-center justify-center gap-10 pb-6">
             {NavLinks.map((link) => (
               <li key={link.title}>
                 {link.submenu ? (
-                  <Popover className="relative">
+                  <Popover className="relative group/popover">
                     <PopoverButton
                       ref={link.title === "BRANDS" ? brandsButtonRef : proButtonRef}
-                      className="text-[11px] font-normal tracking-[0.2em] uppercase transition-colors hover:text-[#0070bb] focus:outline-none"
+                      className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#0070bb] outline-none border-none ring-0"
                     >
                       {link.title}
+                      <ChevronDown className="h-3 w-3 text-stone-300 transition-transform duration-300 group-data-[state=open]/popover:rotate-180" />
                     </PopoverButton>
-                    <PopoverPanel className="absolute left-1/2 z-50 mt-4 w-48 -translate-x-1/2 border border-gray-100 bg-white p-4 shadow-xl animate-in fade-in slide-in-from-top-1">
-                      <div className="flex flex-col gap-3">
+                    <PopoverPanel className="absolute left-1/2 z-50 mt-6 w-56 -translate-x-1/2 border border-stone-100 bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-2">
+                      <div className="flex flex-col gap-4">
                         {link.submenu.map((subItem) => (
                           <Link
                             key={subItem.title}
                             href={subItem.href}
-                            className="text-[10px] tracking-widest text-gray-600 uppercase hover:text-[#0070bb]"
+                            className="text-[10px] tracking-[0.2em] text-stone-500 uppercase font-medium hover:text-[#0070bb]"
                             onClick={() => handlePopoverLinkClick(link.title === "BRANDS" ? brandsButtonRef : proButtonRef)}
                           >
                             {subItem.title}
@@ -160,7 +196,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={link.href}
-                    className="text-[11px] font-normal tracking-[0.2em] uppercase transition-colors hover:text-[#0070bb]"
+                    className="text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#0070bb]"
                   >
                     {link.title}
                   </Link>

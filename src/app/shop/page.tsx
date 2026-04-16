@@ -1,3 +1,5 @@
+"use client";
+
 import Filters from "@/components/shop/filters";
 import Pagination from "@/components/ui/pagination";
 import ProductGridSkeleton from "@/components/ui/ProductGridSkeleton";
@@ -7,6 +9,7 @@ import { formatPrice } from "@/utils/formatPrice";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { cn } from "@/lib/utils";
 
 // Updated search params interface
 interface ShopPageSearchParams {
@@ -17,8 +20,8 @@ interface ShopPageSearchParams {
   productType?: string | string[];
   tags?: string | string[];
   category?: string | string[];
-  after?: string; // Cursor for forward pagination
-  before?: string; // Cursor for backward pagination
+  after?: string;
+  before?: string;
 }
 
 export default async function ShopPage({
@@ -26,24 +29,18 @@ export default async function ShopPage({
 }: {
   searchParams?: ShopPageSearchParams;
 }) {
-  // No need to extract cursor here, getProducts handles searchParams directly
   const pageSize = 20;
 
-  // Get products with pagination (getProducts now reads after/before from searchParams)
   const { products, pageInfo } = await getProducts({
     searchParams,
     pageSize,
   });
 
-  // Build URLs for pagination, preserving existing search params
-  // It now generates ?before=... or ?after=...
   const buildPaginationUrl = (
     cursor: string,
     type: "before" | "after",
   ): string => {
     const params = new URLSearchParams();
-
-    // Add all existing search params *except* cursor params
     if (searchParams) {
       Object.entries(searchParams).forEach(([key, value]) => {
         if (key !== "before" && key !== "after") {
@@ -55,14 +52,10 @@ export default async function ShopPage({
         }
       });
     }
-
-    // Add the new cursor parameter based on type
     params.set(type, cursor);
-
     return `/shop?${params.toString()}`;
   };
 
-  // Function to get the URL for the base page (no cursors)
   const getBasePageUrl = (): string => {
     const params = new URLSearchParams();
     if (searchParams) {
@@ -81,61 +74,105 @@ export default async function ShopPage({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Use container for better spacing */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-        <div className="md:col-span-1">
-          {/* Render the Filters component */}
-          <Filters />
+    <main className="min-h-screen bg-white">
+      {/* Editorial Header */}
+      <header className="border-b border-stone-100 py-12 lg:py-20">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col items-center text-center">
+            <span className="mb-4 text-[11px] font-bold tracking-[0.4em] text-[#73512C] uppercase">
+              Curated Selection
+            </span>
+            <h1 className="font-valky text-5xl md:text-7xl text-stone-900">
+              The <span className="italic font-light">Shop</span>
+            </h1>
+          </div>
         </div>
-        <div className="md:col-span-3">
-          <Suspense fallback={<ProductGridSkeleton />}>
-            {/* Render the filtered products directly */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {products && products.length > 0 ? (
-                products.map((product: Products) => (
-                  <Link
-                    key={product.id}
-                    href={`/shop/${product.handle}`}
-                    className="group"
-                  >
-                    <div className="rounded border border-[#2D1801]/20 p-4 transition-shadow duration-200 group-hover:shadow-md">
-                      {product.featuredImage && (
-                        <Image
-                          src={product.featuredImage.url}
-                          alt={product.featuredImage.altText || product.title}
-                          width={product.featuredImage.width}
-                          height={product.featuredImage.height}
-                          className="mb-2 h-48 w-full object-cover"
-                        />
-                      )}
-                      <h3 className="font-montserrat font-semibold">
-                        {product.title}
-                      </h3>
-                      <p className="font-montserrat font-medium text-gray-700">
-                        {formatPrice(product.price, {
-                          currencyCode: product.currencyCode,
-                        })}
-                      </p>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <p>No products found matching your filters.</p>
-              )}
+      </header>
+
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          
+          {/* Sidebar Filters - Sticky and refined */}
+          <aside className="lg:col-span-3">
+            <div className="sticky top-32">
+              <div className="mb-6 border-b border-stone-900 pb-2">
+                <h2 className="text-[10px] font-bold tracking-[0.2em] uppercase text-stone-900">
+                  Refine Search
+                </h2>
+              </div>
+              <Filters />
             </div>
-            {/* Pass correct props and adjusted buildUrl */}
-            <Pagination
-              hasNextPage={pageInfo.hasNextPage}
-              hasPreviousPage={pageInfo.hasPreviousPage}
-              startCursor={pageInfo.startCursor}
-              endCursor={pageInfo.endCursor}
-              buildUrl={buildPaginationUrl}
-              getBaseUrl={getBasePageUrl} // Pass function to get base URL
-            />
-          </Suspense>
+          </aside>
+
+          {/* Product Grid Area */}
+          <section className="lg:col-span-9">
+            <Suspense fallback={<ProductGridSkeleton />}>
+              <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                {products && products.length > 0 ? (
+                  products.map((product: Products) => (
+                    <Link
+                      key={product.id}
+                      href={`/shop/${product.handle}`}
+                      className="group flex flex-col"
+                    >
+                      {/* Image Container with Luxury Hover */}
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-stone-50">
+                        {product.featuredImage && (
+                          <Image
+                            src={product.featuredImage.url}
+                            alt={product.featuredImage.altText || product.title}
+                            fill
+                            className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:grayscale-0"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                        )}
+                        {/* Quick View / Hover Overlay */}
+                        <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-white/90 py-4 backdrop-blur-sm transition-transform duration-500 group-hover:translate-y-0">
+                          <span className="text-[10px] font-bold tracking-[0.2em] text-[#73512C] uppercase">
+                            View Details
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="mt-6 space-y-2">
+                        <div className="flex items-start justify-between gap-4">
+                          <h3 className="font-serif text-lg leading-tight text-stone-900 group-hover:text-[#73512C] transition-colors">
+                            {product.title}
+                          </h3>
+                        </div>
+                        <p className="text-[13px] font-bold tracking-widest text-stone-400">
+                          {formatPrice(product.price, {
+                            currencyCode: product.currencyCode,
+                          })}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="col-span-full py-24 text-center">
+                    <p className="font-serif text-2xl text-stone-300 italic">
+                      No products found matching your criteria.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Refined Pagination Section */}
+              <div className="mt-20 border-t border-stone-100 pt-12">
+                <Pagination
+                  hasNextPage={pageInfo.hasNextPage}
+                  hasPreviousPage={pageInfo.hasPreviousPage}
+                  startCursor={pageInfo.startCursor}
+                  endCursor={pageInfo.endCursor}
+                  buildUrl={buildPaginationUrl}
+                  getBaseUrl={getBasePageUrl}
+                />
+              </div>
+            </Suspense>
+          </section>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

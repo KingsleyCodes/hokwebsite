@@ -27,9 +27,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-[#1A1A1A]">
       
-      {/* --- HERO SECTION --- 
-          Fresh uses full-bleed imagery with elegant, minimal type overlays.
-      */}
+      {/* --- HERO SECTION --- */}
       <section className="relative w-full">
         <Carousel
           opts={{ align: "start", loop: true }}
@@ -37,7 +35,7 @@ export default function Home() {
           className="w-full"
         >
           <CarouselContent className="ml-0">
-            {/* SLIDE 1: Editorial Style */}
+            {/* SLIDE 1: Left Aligned Editorial */}
             <CarouselItem className="relative h-[80vh] min-h-[600px] w-full pl-0">
               <Image
                 src="/lizare-image-2.png" 
@@ -46,8 +44,10 @@ export default function Home() {
                 className="object-cover object-center"
                 priority
               />
-              {/* Fresh Style: Content is often left-aligned or centered with NO heavy boxes */}
-              <div className="absolute inset-0 bg-black/10" /> 
+              
+              {/* Vibe Check: Subtle Black Overlay (25% opacity) + Gradient for Text Legibility */}
+              <div className="absolute inset-0 bg-black/25" /> 
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
               
               <div className="container relative mx-auto h-full px-6 lg:px-12">
                 <div className="flex h-full flex-col justify-center items-start lg:w-1/2">
@@ -74,7 +74,7 @@ export default function Home() {
               </div>
             </CarouselItem>
 
-            {/* SLIDE 2: Brand/Product Focus */}
+            {/* SLIDE 2: Center Aligned Brand Focus */}
             <CarouselItem className="relative h-[80vh] min-h-[600px] w-full pl-0">
               <Image
                 src={carouselImages[0]?.src || "/lizare-image-2.png"}
@@ -82,6 +82,10 @@ export default function Home() {
                 fill
                 className="object-cover"
               />
+              
+              {/* Vibe Check: Center-weighted Gradient for the centered text */}
+              <div className="absolute inset-0 bg-black/30" /> 
+              
               <div className="container relative mx-auto h-full px-6 lg:px-12">
                 <div className="flex h-full flex-col justify-center items-center text-center">
                   <motion.div 
@@ -92,7 +96,7 @@ export default function Home() {
                     <h2 className="font-valky text-5xl md:text-7xl lg:text-8xl text-white mb-6">
                       {carouselImages[0]?.name || "New Arrivals"}
                     </h2>
-                    <p className="mx-auto max-w-lg text-[15px] tracking-wide text-white/90 mb-10 font-inter">
+                    <p className="mx-auto max-w-lg text-[15px] tracking-wide text-white mb-10 font-inter">
                       Clinical results meet botanical luxury. Discover the latest in dermatological innovation.
                     </p>
                     <Link href="/shop">
@@ -114,7 +118,7 @@ export default function Home() {
         </Carousel>
       </section>
 
-      {/* --- THE TRUST ROW (Fresh Minimalist Style) --- */}
+      {/* --- THE TRUST ROW --- */}
       <div className="w-full border-b border-gray-100 bg-white py-6">
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex flex-wrap justify-between items-center gap-4 text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400">
@@ -132,7 +136,7 @@ export default function Home() {
       {/* --- CONTENT BLOCKS --- */}
       <div className="space-y-32 py-24">
         
-        {/* Section 1: The Trending Edit */}
+        {/* Trending Section */}
         <section className="w-full">
           <div className="container mx-auto px-6 mb-12 text-center">
             <span className="text-[11px] font-bold tracking-[0.3em] text-[#0070bb] uppercase mb-3 block">Most Loved</span>
@@ -141,7 +145,7 @@ export default function Home() {
           <EnhancedCarousel />
         </section>
 
-        {/* Section 2: Shop Products (Editorial Grid) */}
+        {/* Clinical Care Grid */}
         <section className="container mx-auto px-6 lg:px-12">
           <div className="flex flex-col items-center justify-center mb-16 text-center">
             <h2 className="font-valky text-4xl md:text-6xl mb-4">Shop Clinical Care</h2>
@@ -160,14 +164,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 3: Categories (Fresh visual layout) */}
+        {/* Categories Section */}
         <section className="bg-[#f4f7f9] py-24">
            <div className="container mx-auto px-6">
               <ProductCategories />
            </div>
         </section>
 
-        {/* Section 4: Dark/New Arrival Reveal */}
+        {/* New Arrival Section */}
         <section className="bg-white py-24 border-t border-gray-100">
           <div className="container mx-auto px-6">
             <NewArrival />
@@ -175,10 +179,10 @@ export default function Home() {
         </section>
       </div>
 
-      {/* --- FLOATING PARTNER BUTTON (Refined) --- */}
+      {/* Floating Partner CTA */}
       <div className="fixed bottom-8 right-8 z-50">
         <Link href="/wholesale">
-          <button className="flex h-14 items-center gap-3 bg-black px-8 text-[11px] font-bold tracking-[0.2em] text-white transition-all hover:bg-[#0070bb]">
+          <button className="flex h-14 items-center gap-3 bg-black px-8 text-[11px] font-bold tracking-[0.2em] text-white shadow-2xl transition-all hover:bg-[#0070bb]">
             PARTNER WITH US
           </button>
         </Link>

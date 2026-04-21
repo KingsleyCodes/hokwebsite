@@ -40,7 +40,7 @@ export default function EnhancedCarousel() {
             src={collection.image.url}
             alt={collection.image.altText || collection.title}
             fill
-            className="object-cover grayscale transition-all duration-1000 ease-in-out group-hover:scale-110 group-hover:grayscale-0"
+            className="object-cover  duration-1000 ease-in-out group-hover:scale-110 group-hover:grayscale-0"
             sizes="(max-width: 768px) 50vw, 25vw"
           />
         ) : (

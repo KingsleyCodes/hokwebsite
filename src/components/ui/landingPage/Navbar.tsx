@@ -3,11 +3,12 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/useCartStore";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { Menu, Search, ShoppingBag, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, Search, ShoppingBag, ChevronDown, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ProductSearch from "../product-search";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NavLinks = [
   { title: "SHOP", href: "/shop" },
@@ -38,6 +39,7 @@ const NavLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { totalItems } = useCartStore();
   const totalItemsCount = totalItems();
 
@@ -56,58 +58,42 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white">
       {/* Announcement Bar */}
-      <div className="bg-[#0070bb] py-2 text-center text-[9px] font-bold tracking-[0.25em] text-white uppercase">
-        Free Shipping on all orders over ₦50,000
+      <div className="bg-[#73512C] py-2 text-center text-[9px] font-bold tracking-[0.25em] text-white uppercase">
+        5% OFF ON ALL WEBSITE ORDERS
       </div>
 
       <div className="mx-auto max-w-[1440px] border-b border-stone-100 px-4 lg:px-8">
         <section className="flex h-16 items-center justify-between lg:h-24">
           
-          {/* LEFT: Mobile Toggle */}
-          <div className="flex flex-1 items-center gap-4">
+          {/* LEFT: Mobile Toggle & Scoped Search Trigger */}
+          <div className="flex flex-1 items-center gap-4 relative">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <button className="lg:hidden p-2 -ml-2 outline-none border-none bg-transparent">
                   <Menu className="h-6 w-6 stroke-[1.2px]" />
                 </button>
               </SheetTrigger>
-              
               <SheetContent side="top" className="w-full h-screen max-h-screen p-0 border-none bg-white flex flex-col duration-300">
-                {/* 1. Header Row (The built-in Close button will appear here automatically) */}
                 <div className="flex items-center px-6 py-5 border-b border-stone-50 flex-shrink-0">
                   <span className="text-[10px] font-bold tracking-widest text-stone-400 uppercase">Menu</span>
                 </div>
-
-                {/* 2. Search Area */}
                 <div className="px-6 py-4 border-b border-stone-50 bg-stone-50/30 flex-shrink-0">
                    <ProductSearch />
                 </div>
-
-                {/* 3. Navigation Links */}
                 <nav className="flex-1 overflow-y-auto px-6 py-2">
                   <div className="flex flex-col divide-y divide-stone-50">
                     {NavLinks.map((link) => (
                       <div key={link.title} className="py-4">
                         <div className="flex items-center justify-between">
-                          <Link 
-                            href={link.href} 
-                            className="text-lg font-serif text-stone-900"
-                            onClick={() => setOpen(false)}
-                          >
+                          <Link href={link.href} className="text-lg font-serif text-stone-900" onClick={() => setOpen(false)}>
                             {link.title}
                           </Link>
                           {link.submenu && <ChevronRight className="h-3.5 w-3.5 text-stone-300" />}
                         </div>
-                        
                         {link.submenu && (
                           <div className="flex flex-wrap gap-x-4 gap-y-2 pt-3">
                             {link.submenu.map((sub) => (
-                              <Link 
-                                key={sub.title} 
-                                href={sub.href}
-                                className="text-[10px] tracking-widest text-stone-400 uppercase font-medium"
-                                onClick={() => setOpen(false)}
-                              >
+                              <Link key={sub.title} href={sub.href} className="text-[10px] tracking-widest text-stone-400 uppercase font-medium" onClick={() => setOpen(false)}>
                                 {sub.title}
                               </Link>
                             ))}
@@ -116,20 +102,45 @@ export default function Navbar() {
                       </div>
                     ))}
                   </div>
-                  
-                  <div className="mt-12 space-y-4 pb-10">
-                    <Link href="/account" onClick={() => setOpen(false)} className="block text-[10px] tracking-widest text-stone-400 uppercase font-bold">My Account</Link>
-                    <Link href="/help" onClick={() => setOpen(false)} className="block text-[10px] tracking-widest text-stone-400 uppercase font-bold">Help & Support</Link>
-                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
 
-            <div className="hidden lg:block">
-              <button className="flex items-center gap-2 text-[10px] tracking-[0.2em] font-bold text-stone-400 hover:text-black transition-colors outline-none">
-                <Search className="h-4 w-4 stroke-[1.5px]" />
-                SEARCH
-              </button>
+            {/* Desktop Scoped Search Wrapper */}
+            <div className="hidden lg:block relative">
+              <AnimatePresence mode="wait">
+                {!isSearchOpen ? (
+                  <motion.button 
+                    key="search-trigger"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setIsSearchOpen(true)}
+                    className="flex items-center gap-2 text-[10px] tracking-[0.2em] font-bold text-stone-400 hover:text-black transition-colors outline-none"
+                  >
+                    <Search className="h-4 w-4 stroke-[1.5px]" />
+                    SEARCH
+                  </motion.button>
+                ) : (
+                  <motion.div 
+                    key="search-input"
+                    initial={{ opacity: 0, scale: 0.95, x: -10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, x: -10 }}
+                    className="flex items-center gap-3 bg-stone-50 rounded-full px-4 py-2 border border-stone-100 min-w-[300px]"
+                  >
+                    <div className="flex-1">
+                      <ProductSearch />
+                    </div>
+                    <button 
+                      onClick={() => setIsSearchOpen(false)}
+                      className="text-stone-400 hover:text-black transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -155,7 +166,7 @@ export default function Navbar() {
               <div className="relative">
                 <ShoppingBag className="h-5 w-5 lg:h-6 lg:w-6 stroke-[1.2px]" />
                 {mounted && totalItemsCount > 0 && (
-                  <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0070bb] text-[8px] font-bold text-white">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#73512C] text-[8px] font-bold text-white">
                     {totalItemsCount}
                   </span>
                 )}
@@ -173,7 +184,7 @@ export default function Navbar() {
                   <Popover className="relative group/popover">
                     <PopoverButton
                       ref={link.title === "BRANDS" ? brandsButtonRef : proButtonRef}
-                      className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#0070bb] outline-none border-none ring-0"
+                      className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#73512C] outline-none border-none ring-0"
                     >
                       {link.title}
                       <ChevronDown className="h-3 w-3 text-stone-300 transition-transform duration-300 group-data-[state=open]/popover:rotate-180" />
@@ -184,7 +195,7 @@ export default function Navbar() {
                           <Link
                             key={subItem.title}
                             href={subItem.href}
-                            className="text-[10px] tracking-[0.2em] text-stone-500 uppercase font-medium hover:text-[#0070bb]"
+                            className="text-[10px] tracking-[0.2em] text-stone-500 uppercase font-medium hover:text-[#73512C]"
                             onClick={() => handlePopoverLinkClick(link.title === "BRANDS" ? brandsButtonRef : proButtonRef)}
                           >
                             {subItem.title}
@@ -196,7 +207,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={link.href}
-                    className="text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#0070bb]"
+                    className="text-[10px] font-bold tracking-[0.25em] uppercase transition-colors hover:text-[#73512C]"
                   >
                     {link.title}
                   </Link>

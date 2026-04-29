@@ -118,11 +118,7 @@ export default function Home() {
         
         {/* Trending Section */}
         <section className="w-full">
-          <div className="container mx-auto px-6 mb-12 text-center">
-            <span className="text-[11px] font-bold tracking-[0.4em] text-[#73512C] uppercase mb-4 block">Seasonal Selection</span>
-            <h3 className="font-valky text-5xl md:text-7xl">The <span className="italic">Trending</span> Edit</h3>
-            <div className="mx-auto mt-8 h-px w-24 bg-stone-200"></div>
-          </div>
+        
           <EnhancedCarousel />
         </section>
 

@@ -122,7 +122,7 @@ export default async function ShopPage({
                             src={product.featuredImage.url}
                             alt={product.featuredImage.altText || product.title}
                             fill
-                            className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:grayscale-0"
+                            className="object-cover duration-700 ease-in-out group-hover:scale-105 "
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         )}
